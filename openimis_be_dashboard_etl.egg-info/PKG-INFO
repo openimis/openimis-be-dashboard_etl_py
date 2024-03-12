@@ -1,0 +1,23 @@
+Metadata-Version: 2.1
+Name: openimis-be-dashboard-etl
+Version: 1.0.0
+Summary: The openIMIS Backend module to extract data from production and push to another database designed for Business Intelligence tool
+Home-page: https://openimis.org/
+Author: Hiren Soni
+Author-email: hiren.soni@swisstph.ch
+License: GNU AGPL v3
+Platform: UNKNOWN
+Classifier: Environment :: Web Environment
+Classifier: Framework :: Django
+Classifier: Framework :: Django :: 4.2
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: GNU Affero General Public License v3
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+License-File: LICENSE.md
+
+UNKNOWN
+

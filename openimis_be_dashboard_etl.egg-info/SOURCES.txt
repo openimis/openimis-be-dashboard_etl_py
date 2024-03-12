@@ -1,0 +1,16 @@
+LICENSE.md
+README.md
+setup.py
+dashboard_etl/__init__.py
+dashboard_etl/admin.py
+dashboard_etl/apps.py
+dashboard_etl/models.py
+dashboard_etl/tests.py
+dashboard_etl/urls.py
+dashboard_etl/views.py
+dashboard_etl/migrations/__init__.py
+openimis_be_dashboard_etl.egg-info/PKG-INFO
+openimis_be_dashboard_etl.egg-info/SOURCES.txt
+openimis_be_dashboard_etl.egg-info/dependency_links.txt
+openimis_be_dashboard_etl.egg-info/requires.txt
+openimis_be_dashboard_etl.egg-info/top_level.txt
