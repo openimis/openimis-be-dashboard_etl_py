@@ -35,7 +35,7 @@ class Location(models.Model):
     id = models.IntegerField(db_column="LocationId", primary_key=True)
     code = models.CharField(db_column="LocationCode", max_length=8)
     name = models.CharField(db_column="LocationName", max_length=50)
-    parent_id = models.ForeignKey('self', db_column="ParentLocationId",
+    parent_id = models.ForeignKey('self', db_column="ParentLocationId", null=True,
                                   on_delete=models.SET_NULL, related_name="children")
     male_population = models.IntegerField(db_column="MalePopulation")
     female_population = models.IntegerField(db_column="FemalePopulation")
@@ -50,11 +50,11 @@ class HealthFacility(models.Model):
     id = models.IntegerField(db_column="HFID", primary_key=True)
     code = models.CharField(db_column="HFCode", max_length=8)
     name = models.CharField(db_column="HFName", max_length=100)
-    legal_form = models.ForeignKey(LegalForm, db_column="LegalForm", max_length=1,
-                                   on_delete=models.SET_NULL, related_name="helath_facilities")
+    legal_form = models.ForeignKey(LegalForm, db_column="LegalForm", max_length=1, null=True,
+                                   on_delete=models.SET_NULL, related_name="health_facilities")
     level = models.CharField(db_column="HFLevel", max_length=1)
-    location = models.ForeignKey(Location, db_column="LocationId",
-                                 on_delete=models.SET_NULL, related_name="helath_facilities")
+    location = models.ForeignKey(Location, db_column="LocationId", null=True,
+                                 on_delete=models.SET_NULL, related_name="health_facilities")
 
     class Meta:
         db_table = "HealthFacilities"
@@ -80,14 +80,14 @@ class PayerType(models.Model):
 class ActiveHousehold(models.Model):
     active_households = models.IntegerField(db_column="ActiveHouseholds")
     period = models.DateField(db_column="ActivePeriod")
-    location = models.ForeignKey(Location, db_column="LocationId",
+    location = models.ForeignKey(Location, db_column="LocationId", null=True,
                                  on_delete=models.SET_NULL, related_name="active_households")
-    gender = models.ForeignKey(Gender, db_column="Gender",
+    gender = models.ForeignKey(Gender, db_column="Gender", null=True,
                                on_delete=models.SET_NULL, related_name="active_households")
     age = models.IntegerField(db_column="Age")
-    confirmation_type = models.ForeignKey(ConfirmationType, db_column="ConfirmationType",
+    confirmation_type = models.ForeignKey(ConfirmationType, db_column="ConfirmationType", null=True,
                                           on_delete=models.SET_NULL, related_name="active_households")
-    benefit_amount = models.DecimalField(db_column="BenefitAmount")
+    benefit_amount = models.DecimalField(db_column="BenefitAmount", decimal_places=2, max_digits=18)
 
     class Meta:
         db_table = "ActiveHouseholds"
@@ -96,12 +96,12 @@ class ActiveHousehold(models.Model):
 class InsuredHousehold(models.Model):
     insured_households = models.IntegerField(db_column="InsuredHouseholds")
     period = models.DateField(db_column="InsuredDate")
-    location = models.ForeignKey(Location, db_column="LocationId",
+    location = models.ForeignKey(Location, db_column="LocationId", null=True,
                                  on_delete=models.SET_NULL, related_name="insured_households")
-    gender = models.ForeignKey(Gender, db_column="Gender",
+    gender = models.ForeignKey(Gender, db_column="Gender", null=True,
                                on_delete=models.SET_NULL, related_name="insured_households")
     age = models.IntegerField(db_column="Age")
-    confirmation_type = models.ForeignKey(ConfirmationType, db_column="ConfirmationType",
+    confirmation_type = models.ForeignKey(ConfirmationType, db_column="ConfirmationType", null=True,
                                           on_delete=models.SET_NULL, related_name="insured_households")
     policy_stage = models.CharField(db_column="PolicyStage", max_length=1)
 
@@ -113,12 +113,12 @@ class InsuredHousehold(models.Model):
 class ActiveInsuree(models.Model):
     active_insurees = models.IntegerField(db_column="ActiveInsurees")
     period = models.DateField(db_column="ActivePeriod")
-    location = models.ForeignKey(Location, db_column="LocationId",
+    location = models.ForeignKey(Location, db_column="LocationId", null=True,
                                  on_delete=models.SET_NULL, related_name="active_insurees")
-    gender = models.ForeignKey(Gender, db_column="Gender",
+    gender = models.ForeignKey(Gender, db_column="Gender", null=True,
                                on_delete=models.SET_NULL, related_name="active_insurees")
     age = models.IntegerField(db_column="Age")
-    confirmation_type = models.ForeignKey(ConfirmationType, db_column="ConfirmationType",
+    confirmation_type = models.ForeignKey(ConfirmationType, db_column="ConfirmationType", null=True,
                                           on_delete=models.SET_NULL, related_name="active_insurees")
 
 
@@ -129,12 +129,12 @@ class ActiveInsuree(models.Model):
 class InsuredInsuree(models.Model):
     insured_insurees = models.IntegerField(db_column="InsuredInsurees")
     period = models.DateField(db_column="InsuredDate")
-    location = models.ForeignKey(Location, db_column="LocationId",
+    location = models.ForeignKey(Location, db_column="LocationId", null=True,
                                  on_delete=models.SET_NULL, related_name="insured_insurees")
-    gender = models.ForeignKey(Gender, db_column="Gender",
+    gender = models.ForeignKey(Gender, db_column="Gender", null=True,
                                on_delete=models.SET_NULL, related_name="insured_insurees")
     age = models.IntegerField(db_column="Age")
-    confirmation_type = models.ForeignKey(ConfirmationType, db_column="ConfirmationType",
+    confirmation_type = models.ForeignKey(ConfirmationType, db_column="ConfirmationType", null=True,
                                           on_delete=models.SET_NULL, related_name="insured_insurees")
     policy_stage = models.CharField(db_column="PolicyStage", max_length=1)
 
@@ -145,21 +145,21 @@ class InsuredInsuree(models.Model):
 
 class ClaimReceived(models.Model):
     claims_received = models.IntegerField(db_column="ClaimReceived")
-    amount = models.DecimalField(db_column="Amount")
-    approved = models.DecimalField(db_column="Approved")
+    amount = models.DecimalField(db_column="Amount", decimal_places=2, max_digits=18)
+    approved = models.DecimalField(db_column="Approved", decimal_places=2, max_digits=18)
     received_date = models.DateField(db_column="ReceivedDate")
-    health_facility = models.ForeignKey(HealthFacility, db_column="HFId",
+    health_facility = models.ForeignKey(HealthFacility, db_column="HFId", null=True,
                                         on_delete=models.SET_NULL, related_name="claims")
     age = models.IntegerField(db_column="Age")
-    gender = models.ForeignKey(Gender, db_column="Gender",
+    gender = models.ForeignKey(Gender, db_column="Gender", null=True,
                                on_delete=models.SET_NULL, related_name="claims")
-    location = models.ForeignKey(Location, db_column="LocationId",
+    location = models.ForeignKey(Location, db_column="LocationId", null=True,
                                  on_delete=models.SET_NULL, related_name="claims")
     care_type = models.CharField(db_column="CareType", max_length=4)
     visit_type = models.CharField(db_column="VisitType", max_length=1)
-    icd = models.ForeignKey(ICD, db_column="ICDID",
+    icd = models.ForeignKey(ICD, db_column="ICDID", null=True,
                             on_delete=models.SET_NULL, related_name="claims")
-    confirmation_type = models.ForeignKey(ConfirmationType, db_column="ConfirmationType",
+    confirmation_type = models.ForeignKey(ConfirmationType, db_column="ConfirmationType", null=True,
                                           on_delete=models.SET_NULL, related_name="claims")
     processing_days = models.IntegerField(db_column="ProcessingDays")
     claim_status = models.IntegerField(db_column="ClaimStatus")
@@ -171,14 +171,14 @@ class ClaimReceived(models.Model):
 
 
 class PremiumCollected(models.Model):
-    amount = models.DecimalField(db_column="Amount")
+    amount = models.DecimalField(db_column="Amount", decimal_places=2, max_digits=18)
     pay_date = models.DateField(db_column="PayDate")
     pay_type = models.CharField(db_column="PayType", max_length=1)
-    location = models.ForeignKey(Location, db_column="LocationId",
+    location = models.ForeignKey(Location, db_column="LocationId", null=True,
                                  on_delete=models.SET_NULL, related_name="premiums")
-    payer_type = models.ForeignKey(PayerType, db_column="PayerTypeCode", max_length=1,
+    payer_type = models.ForeignKey(PayerType, db_column="PayerTypeCode", max_length=1, null=True,
                                    on_delete=models.SET_NULL, related_name="premiums")
-    confirmation_type = models.ForeignKey(ConfirmationType, db_column="ConfirmationType",
+    confirmation_type = models.ForeignKey(ConfirmationType, db_column="ConfirmationType", null=True,
                                           on_delete=models.SET_NULL, related_name="premiums")
     policy_stage = models.CharField(db_column="PolicyStage", max_length=1)
 
@@ -190,14 +190,14 @@ class PremiumCollected(models.Model):
 class VisitsByInsuree(models.Model):
     visits = models.IntegerField(db_column="TotalVisit")
     period = models.DateField(db_column="InsuredDate")
-    gender = models.ForeignKey(Gender, db_column="Gender",
+    gender = models.ForeignKey(Gender, db_column="Gender", null=True,
                                on_delete=models.SET_NULL, related_name="visits")
     age = models.IntegerField(db_column="Age")
-    location = models.ForeignKey(Location, db_column="LocationId",
+    location = models.ForeignKey(Location, db_column="LocationId", null=True,
                                  on_delete=models.SET_NULL, related_name="visits")
-    health_facility = models.ForeignKey(HealthFacility, db_column="HFId",
+    health_facility = models.ForeignKey(HealthFacility, db_column="HFId", null=True,
                                         on_delete=models.SET_NULL, related_name="visits")
-    confirmation_type = models.ForeignKey(ConfirmationType, db_column="ConfirmationType",
+    confirmation_type = models.ForeignKey(ConfirmationType, db_column="ConfirmationType", null=True,
                                           on_delete=models.SET_NULL, related_name="visits")
 
 
