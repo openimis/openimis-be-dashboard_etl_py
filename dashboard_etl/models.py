@@ -6,6 +6,9 @@ class AgeGroup(models.Model):
     max_age = models.IntegerField(db_column="MaxAge")
     age_group = models.CharField(db_column="AgeGroup", max_length=20)
 
+    class Meta:
+        db_table = "AgeGroup"
+
 
 class ConfirmationType(models.Model):
     code = models.CharField(db_column="Code", max_length=3, primary_key=True)
@@ -35,12 +38,12 @@ class Location(models.Model):
     id = models.IntegerField(db_column="LocationId", primary_key=True)
     code = models.CharField(db_column="LocationCode", max_length=8)
     name = models.CharField(db_column="LocationName", max_length=50)
-    parent_id = models.ForeignKey('self', db_column="ParentLocationId", null=True,
-                                  on_delete=models.SET_NULL, related_name="children")
-    male_population = models.IntegerField(db_column="MalePopulation")
-    female_population = models.IntegerField(db_column="FemalePopulation")
-    other_population = models.IntegerField(db_column="OtherPopulation")
-    households = models.IntegerField(db_column="Households")
+    parent = models.ForeignKey('self', db_column="ParentLocationId", null=True, blank=True,
+                               on_delete=models.SET_NULL, related_name="children")
+    male_population = models.IntegerField(db_column="MalePopulation", null=True, blank=True)
+    female_population = models.IntegerField(db_column="FemalePopulation", null=True, blank=True)
+    other_population = models.IntegerField(db_column="OtherPopulation", null=True, blank=True)
+    households = models.IntegerField(db_column="Households", null=True, blank=True)
 
     class Meta:
         db_table = "Locations"
