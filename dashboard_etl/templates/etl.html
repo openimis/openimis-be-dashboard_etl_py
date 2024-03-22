@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ETL Progress</title>
+</head>
+<body>
+    <h1>ETL Progress:</h1>
+    {% if message %}
+        <p>{{ message }}</p>
+    {% endif %}
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Run ETL</button>
+    </form>
+    <ul>
+        {% for indicator_name, progress_stage in progress.items %}
+            <li>{{ indicator_name }}: {{ progress_stage }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

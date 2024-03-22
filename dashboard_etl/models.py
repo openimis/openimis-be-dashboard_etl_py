@@ -91,6 +91,7 @@ class ActiveHousehold(models.Model):
     confirmation_type = models.ForeignKey(ConfirmationType, db_column="ConfirmationType", null=True,
                                           on_delete=models.SET_NULL, related_name="active_households")
     benefit_amount = models.DecimalField(db_column="BenefitAmount", decimal_places=2, max_digits=18)
+    last_id = models.IntegerField(db_column="LastId")
 
     class Meta:
         db_table = "ActiveHouseholds"
