@@ -124,7 +124,7 @@ class ActiveInsuree(models.Model):
     age = models.IntegerField(db_column="Age")
     confirmation_type = models.ForeignKey(ConfirmationType, db_column="ConfirmationType", null=True,
                                           on_delete=models.SET_NULL, related_name="active_insurees")
-
+    last_id = models.IntegerField(db_column="LastId")
 
     class Meta:
         db_table = "ActiveInsurees"
