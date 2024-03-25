@@ -141,8 +141,8 @@ class InsuredInsuree(models.Model):
     age = models.IntegerField(db_column="Age")
     confirmation_type = models.ForeignKey(ConfirmationType, db_column="ConfirmationType", null=True,
                                           on_delete=models.SET_NULL, related_name="insured_insurees")
-    policy_stage = models.CharField(db_column="PolicyStage", max_length=1)
-
+    policy_stage = models.CharField(db_column="PolicyStage", max_length=1, null=True)
+    last_id = models.IntegerField(db_column="LastId")
 
     class Meta:
         db_table = "InsuredInsurees"
