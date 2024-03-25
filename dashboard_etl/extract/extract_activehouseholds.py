@@ -74,19 +74,6 @@ class ActiveHouseholdExtractor(ETLBase):
             GROUP BY DATEADD(MONTH, MonthNumber.Number, InsP.EffectiveDate), F.LocationId, I.Gender, DATEDIFF(DAY, I.DOB, InsP.EffectiveDate)/365, F.ConfirmationType
 
 """)
-        # sql = text(f"""SELECT TOP 100000 3 ActiveHouseholds, InsP.EffectiveDate ActivePeriod, F.LocationId, I.Gender, DATEDIFF(DAY, InsP.EffectiveDate, I.DOB)/365 Age, F.ConfirmationType, 0 BenefitAmount, 0 LastId
-        #             FROM tblInsureePolicy InsP
-        #             INNER JOIN tblInsuree I ON I.InsureeId = InsP.InsureeId
-        #             INNER JOIN tblFamilies F ON F.FamilyID = I.FamilyID
-        #             WHERE InsP.ValidityTo IS NULL
-        #             AND I.ValidityTo IS NULL
-        #             AND F.ValidityTo IS NULL
-        #             AND I.IsHead = 1""")
-
-
-        # with connection.cursor() as cursor:
-        #     cursor.execute(sql)
-        #     return cursor.fetchall()
 
         return self.execute_sql(sql, self.engine_src)
 
@@ -124,18 +111,9 @@ class ActiveHouseholdExtractor(ETLBase):
                 data_to_insert = [{**row} for row in batch]
                 conn.execute(sql, data_to_insert)
                 print(f"Page {page}/{total_pages}")
-                self.progress_tracker.update_stage(f"{(((Decimal(page)/total_pages)) * 100):.2f}% completed")
+                self.progress_tracker.update_stage(
+                    f"{(((Decimal(page)/total_pages)) * 100):.2f}% completed ({page}/{total_pages})")
 
-        # with self.engine_dest.begin() as conn:
-        #     for i in range(0, len(data), BATCH_SIZE):
-        #         page += 1
-
-        #         batch = data[i: i + BATCH_SIZE]
-        #         data_to_insert = [{**row} for row in batch]
-        #         conn.execute(sql, data_to_insert)
-        #         conn.commit()
-        #         print(f"Page {page}/{total_pages}")
-        #         self.progress_tracker.update_stage(f"{(((Decimal(page)/total_pages)) * 100):.2f}% completed")
 
             conn.commit()
         self.progress_tracker.update_stage("Done!")

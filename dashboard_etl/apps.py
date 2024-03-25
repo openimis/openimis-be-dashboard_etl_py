@@ -13,5 +13,6 @@ class DashboardConfig(AppConfig):
     indicators = [
         ("active_households"),
         ("active_insurees"),
-        ("claim_received")
+        ("claim_received"),
+        ("insured_household")
     ]
