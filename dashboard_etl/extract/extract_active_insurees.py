@@ -19,7 +19,8 @@ def run_etl():
         extracted_data = instance.extract()
         transformed_data = instance.transform(extracted_data)
         instance.load(transformed_data)
-    except Exception:
+    except Exception as ex:
+        print(ex)
         instance.progress_tracker.update_stage("ERROR!")
 
 
@@ -87,7 +88,7 @@ class ActiveInsureesExtractor(ETLBase):
 
     def load(self, data):
         self.progress_tracker.update_stage("Loading...")
-        sql = text("INSERT INTO ActiveInsurees(ActiveInsurees, ActivePeriod, LocationId, Gender, Age, ConfirmationType, LastId) VALUES(:active_insurees, :period, :location_id, :gender, :age, :confirmation_type, :last_id)")
+        sql = text("INSERT INTO ActiveInsurees(ActiveInsurees, ActivePeriod, LocationId, Gender, Age, ConfirmationType, LastId) VALUES(:active_insuree, :period, :location_id, :gender, :age, :confirmation_type, :last_id)")
 
         page = 0
         total_pages = (len(data) + BATCH_SIZE - 1) // BATCH_SIZE
