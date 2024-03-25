@@ -1,5 +1,3 @@
-import asyncio
-from fastapi import FastAPI, BackgroundTasks, Request
 from django.core.cache import cache
 from django.http import HttpResponse, JsonResponse
 from django.apps import apps
@@ -17,7 +15,7 @@ async def extract_base_data(request):
     return HttpResponse("Base data extracted!")
 
 
-def extract_indicators(request: Request):
+def extract_indicators(request):
     if request.method == "POST":
         # result = run_etl()
         result = run_etl.apply_async()

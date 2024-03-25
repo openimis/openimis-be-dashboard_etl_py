@@ -20,10 +20,13 @@ INDICATOR = "active_households"
 
 @shared_task
 def run_etl():
-    instance = ActiveHouseholdExtractor()
-    extracted_data = instance.extract()
-    transformed_data = instance.transform(extracted_data)
-    instance.load(transformed_data)
+    try:
+        instance = ActiveHouseholdExtractor()
+        extracted_data = instance.extract()
+        transformed_data = instance.transform(extracted_data)
+        instance.load(transformed_data)
+    except Exception:
+        instance.progress_tracker.update_stage("ERROR!")
 
 
 class ActiveHouseholdExtractor(ETLBase):

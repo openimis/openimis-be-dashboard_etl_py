@@ -3,9 +3,6 @@ from abc import ABC, abstractclassmethod
 
 class ETLBase(ABC):
 
-    # @abstractclassmethod
-    # def run_etl(self): pass
-
     @abstractclassmethod
     def extract(self): pass
 
