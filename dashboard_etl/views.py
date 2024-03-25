@@ -28,7 +28,19 @@ def extract_indicators(request: Request):
         return render(request, "etl.html", {"progress": progress})
 
     else:
-        progress = {indicator_name: "Not Started" for indicator_name in indicators}
+        progress = {indicator_name: cache.get(f"{indicator_name}_progress", "Not Started")
+                    for indicator_name in indicators}
+
         return render(request, "etl.html", {"progress": progress})
+
+
+def get_task_progress(request):
+    progress = {indicator_name: cache.get(f"{indicator_name}_progress", "Not Started")
+                for indicator_name in indicators}
+
+    return JsonResponse({"progress": progress})
+
+
+
 
 # celery -A openIMIS.celery worker -E --loglevel=info

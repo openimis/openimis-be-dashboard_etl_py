@@ -1,17 +1,22 @@
-import asyncio
-from asgiref.sync import async_to_sync
-from celery import shared_task
-from .extract_activehouseholds import ActiveHouseholdExtractor
+from celery import shared_task, group
+from .extract_activehouseholds import run_etl as active_households_etl
+from .extract_active_insurees import run_etl as active_insruees_etl
 
 
 @shared_task
 def run_etl():
-    indicators = [
-        (ActiveHouseholdExtractor, "active_household"),
-    ]
+    task_group = group(active_households_etl(), active_insruees_etl())
+    task_group()
+    # active_households_etl.delay()
+    # active_insruees_etl.delay()
 
-    for class_name, indicator in indicators:
-        # yield f"{indicator} ETL Started"
-        isinstance = class_name()
-        return isinstance.run_etl()
-    # return "ETL Started!!!"
+    # indicators = [
+    #     (ActiveHouseholdExtractor, "active_household"),
+    #     (ActiveInsureesExtractor, "active_insurees"),
+    # ]
+
+    # for class_name, indicator in indicators:
+    #     instance = class_name()
+    #     instance.run_etl.delay()
+
+    return "ETL Started!!!"

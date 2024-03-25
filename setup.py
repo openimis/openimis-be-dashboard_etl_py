@@ -20,7 +20,9 @@ setup(
     author_email='hiren.soni@swisstph.ch',
     install_requires=[
         'django',
-        'python-dateutil==2.8.2'
+        'python-dateutil==2.8.2',
+        'django-redis',
+        'sqlalchemy'
     ],
     classifiers=[
         'Environment :: Web Environment',

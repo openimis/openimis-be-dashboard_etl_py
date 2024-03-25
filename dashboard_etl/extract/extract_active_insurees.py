@@ -1,32 +1,26 @@
-import asyncio
 from decimal import Decimal
 from dashboard_etl.extract.progress import ETLProgress
 from django.apps import apps
-from django.db import connection
-from django.db.models import Max
-from django.core.cache import cache
-from dashboard_etl.models import ActiveHousehold
 from sqlalchemy import create_engine
 from sqlalchemy.sql import text
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from .etl_base import ETLBase
 from celery import shared_task
 
 BATCH_SIZE = apps.get_app_config("dashboard_etl").batch_size
 source_con_str = apps.get_app_config("dashboard_etl").src_con_str
 dest_con_str = apps.get_app_config("dashboard_etl").dest_con_str
-INDICATOR = "active_households"
+INDICATOR = "active_insurees"
 
 
 @shared_task
 def run_etl():
-    instance = ActiveHouseholdExtractor()
+    instance = ActiveInsureesExtractor()
     extracted_data = instance.extract()
     transformed_data = instance.transform(extracted_data)
     instance.load(transformed_data)
 
 
-class ActiveHouseholdExtractor(ETLBase):
+class ActiveInsureesExtractor(ETLBase):
 
     def __init__(self) -> None:
         self.progress_tracker = ETLProgress(INDICATOR)
@@ -42,9 +36,7 @@ class ActiveHouseholdExtractor(ETLBase):
             return result.mappings().all()
 
     def get_max_last_id(self):
-        # max_last_id = ActiveHousehold.objects.using(DATABASE).aggregate(max_last_id=Max("last_id"))
-        # return max_last_id["max_last_id"] or 0
-        sql = text("SELECT ISNULL(MAX(LastId), 0) LastId FROM ActiveHouseholds")
+        sql = text("SELECT ISNULL(MAX(LastId), 0) LastId FROM ActiveInsurees")
         max_id = self.execute_sql(sql, self.engine_dest)
         return max_id[0]["LastId"]
 
@@ -55,36 +47,20 @@ class ActiveHouseholdExtractor(ETLBase):
         max_id = self.get_max_last_id()
 
         sql = text(f"""
-            SELECT COUNT(DISTINCT F.FamilyID) ActiveHouseholds, DATEADD(MONTH, MonthNumber.Number, InsP.EffectiveDate) ActivePeriod, F.LocationId, I.Gender, DATEDIFF(DAY, I.DOB, InsP.EffectiveDate)/365 Age, F.ConfirmationType, SUM(P.PolicyValue)BenefitAmount, (SELECT MAX(InsureePolicyId) FROM tblInsureePolicy WHERE ValidityTo IS NULL)LastId
-            FROM tblInsureePolicy InsP
-            INNER JOIN tblInsuree I ON I.InsureeId = InsP.InsureeId
-            INNER JOIN tblFamilies F ON F.InsureeID = I.InsureeID
-            INNER JOIN tblLocations L ON L.LocationId = F.LocationId
-            INNER JOIN tblPolicy P ON P.FamilyID = F.FamilyID
-            CROSS APPLY (VALUES(0), (1),(2),(3),(4),(5),(6),(7),(8),(9),(10),(11), (12))MonthNumber(Number)
-            WHERE InsP.ValidityTo IS NULL
-            AND I.ValidityTo IS NULL
-            AND F.ValidityTo IS NULL
-            AND L.ValidityTo IS NULL
-            AND P.ValidityTo IS NULL
-            AND InsP.InsureePolicyId > {max_id}
-            GROUP BY DATEADD(MONTH, MonthNumber.Number, InsP.EffectiveDate), F.LocationId, I.Gender, DATEDIFF(DAY, I.DOB, InsP.EffectiveDate)/365, F.ConfirmationType
+                    SELECT COUNT(InsP.InsureeId) ActiveInsurees, DATEADD(MONTH, MonthNumber.Number, InsP.EffectiveDate) ActivePeriod, F.LocationId, I.Gender, DATEDIFF(DAY, I.DOB, InsP.EffectiveDate)/365 Age, F.ConfirmationType, (SELECT MAX(InsureePolicyId) FROM tblInsureePolicy WHERE ValidityTo IS NULL)LastId
+                    FROM tblInsureePolicy InsP
+                    INNER JOIN tblInsuree I ON I.InsureeId = InsP.InsureeId
+                    INNER JOIN tblFamilies F ON F.FamilyId = I.FamilyID
+                    INNER JOIN tblLocations L ON L.LocationId = F.LocationId
+                    CROSS APPLY (VALUES(0), (1),(2),(3),(4),(5),(6),(7),(8),(9),(10),(11), (12))MonthNumber(Number)
+                    WHERE InsP.ValidityTo IS  NULL
+                    AND I.ValidityTo IS NULL
+                    AND F.ValidityTo IS NULL
+                    AND L.ValidityTo IS NULL
+                    AND InsP.InsureePolicyId > {max_id}
+                    GROUP BY DATEADD(MONTH, MonthNumber.Number, InsP.EffectiveDate), F.LocationId, I.Gender, DATEDIFF(DAY, I.DOB, InsP.EffectiveDate)/365, F.ConfirmationType            
 
 """)
-        # sql = text(f"""SELECT TOP 100000 3 ActiveHouseholds, InsP.EffectiveDate ActivePeriod, F.LocationId, I.Gender, DATEDIFF(DAY, InsP.EffectiveDate, I.DOB)/365 Age, F.ConfirmationType, 0 BenefitAmount, 0 LastId
-        #             FROM tblInsureePolicy InsP
-        #             INNER JOIN tblInsuree I ON I.InsureeId = InsP.InsureeId
-        #             INNER JOIN tblFamilies F ON F.FamilyID = I.FamilyID
-        #             WHERE InsP.ValidityTo IS NULL
-        #             AND I.ValidityTo IS NULL
-        #             AND F.ValidityTo IS NULL
-        #             AND I.IsHead = 1""")
-
-
-        # with connection.cursor() as cursor:
-        #     cursor.execute(sql)
-        #     return cursor.fetchall()
-
         return self.execute_sql(sql, self.engine_src)
 
 
@@ -94,13 +70,12 @@ class ActiveHouseholdExtractor(ETLBase):
         transformed_data = []
         for row in data:
             transformed_data.append({
-                "active_households": row["ActiveHouseholds"],
+                "active_insuree": row["ActiveInsurees"],
                 "period": row["ActivePeriod"],
                 "location_id": row["LocationId"],
                 "gender": row["Gender"],
                 "age": row["Age"],
                 "confirmation_type": row["ConfirmationType"] if row["ConfirmationType"] else None,
-                "benefit_amount": row["BenefitAmount"],
                 "last_id": row["LastId"]
             })
 
@@ -109,7 +84,7 @@ class ActiveHouseholdExtractor(ETLBase):
 
     def load(self, data):
         self.progress_tracker.update_stage("Loading...")
-        sql = text("INSERT INTO ActiveHouseholds(ActiveHouseholds, ActivePeriod, LocationId, Gender, Age, ConfirmationType, BenefitAmount, LastId) VALUES(:active_households, :period, :location_id, :gender, :age, :confirmation_type, :benefit_amount, :last_id)")
+        sql = text("INSERT INTO ActiveInsurees(ActiveInsurees, ActivePeriod, LocationId, Gender, Age, ConfirmationType, LastId) VALUES(:active_insurees, :period, :location_id, :gender, :age, :confirmation_type, :last_id)")
 
         page = 0
         total_pages = (len(data) + BATCH_SIZE - 1) // BATCH_SIZE
