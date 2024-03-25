@@ -169,6 +169,7 @@ class ClaimReceived(models.Model):
     claim_status = models.IntegerField(db_column="ClaimStatus")
     review_status = models.IntegerField(db_column="ReviewStatus")
     hf_days = models.IntegerField(db_column="DaysInHF")
+    last_id = models.IntegerField(db_column="LastId")
 
     class Meta:
         db_table = "ClaimReceived"

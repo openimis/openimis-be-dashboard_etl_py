@@ -1,7 +1,6 @@
 from django.apps import AppConfig
 import os
-from django.db.models.signals import post_migrate
-from django.core import management
+
 
 class DashboardConfig(AppConfig):
 
@@ -15,10 +14,3 @@ class DashboardConfig(AppConfig):
         ("active_households"),
         ("active_insurees"),
     ]
-
-
-    def ready(self) -> None:
-        post_migrate.connect(self.start_celery_worker, sender=self)
-
-    def start_celery_worker(self, **kwargs):
-        management.call_command('celery', 'worker', '--detach', '--loglevel=info', '--pool=thread')
