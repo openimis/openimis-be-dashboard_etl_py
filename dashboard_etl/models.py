@@ -149,27 +149,27 @@ class InsuredInsuree(models.Model):
 
 class ClaimReceived(models.Model):
     claims_received = models.IntegerField(db_column="ClaimReceived")
-    amount = models.DecimalField(db_column="Amount", decimal_places=2, max_digits=18)
-    approved = models.DecimalField(db_column="Approved", decimal_places=2, max_digits=18)
+    amount = models.DecimalField(db_column="Amount", decimal_places=2, max_digits=18, null=True, blank=True)
+    approved = models.DecimalField(db_column="Approved", decimal_places=2, max_digits=18, null=True, blank=True)
     received_date = models.DateField(db_column="ReceivedDate")
     health_facility = models.ForeignKey(HealthFacility, db_column="HFId", null=True,
                                         on_delete=models.SET_NULL, related_name="claims")
-    age = models.IntegerField(db_column="Age")
+    age = models.IntegerField(db_column="Age", null=True, blank=True)
     gender = models.ForeignKey(Gender, db_column="Gender", null=True,
                                on_delete=models.SET_NULL, related_name="claims")
     location = models.ForeignKey(Location, db_column="LocationId", null=True,
                                  on_delete=models.SET_NULL, related_name="claims")
-    care_type = models.CharField(db_column="CareType", max_length=4)
-    visit_type = models.CharField(db_column="VisitType", max_length=1)
+    care_type = models.CharField(db_column="CareType", max_length=4, null=True, blank=True)
+    visit_type = models.CharField(db_column="VisitType", max_length=1, null=True, blank=True)
     icd = models.ForeignKey(ICD, db_column="ICDID", null=True,
                             on_delete=models.SET_NULL, related_name="claims")
     confirmation_type = models.ForeignKey(ConfirmationType, db_column="ConfirmationType", null=True,
                                           on_delete=models.SET_NULL, related_name="claims")
-    processing_days = models.IntegerField(db_column="ProcessingDays")
-    claim_status = models.IntegerField(db_column="ClaimStatus")
-    review_status = models.IntegerField(db_column="ReviewStatus")
-    hf_days = models.IntegerField(db_column="DaysInHF")
-    last_id = models.IntegerField(db_column="LastId")
+    processing_days = models.IntegerField(db_column="ProcessingDays", null=True, blank=True)
+    claim_status = models.IntegerField(db_column="ClaimStatus", null=True, blank=True)
+    review_status = models.IntegerField(db_column="ReviewStatus", null=True, blank=True)
+    hf_days = models.IntegerField(db_column="DaysInHF", null=True, blank=True)
+    last_id = models.IntegerField(db_column="LastId", null=True, blank=True)
 
     class Meta:
         db_table = "ClaimReceived"
