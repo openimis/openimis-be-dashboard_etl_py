@@ -36,8 +36,3 @@ def get_task_progress(request):
                 for indicator_name in indicators}
 
     return JsonResponse({"progress": progress})
-
-
-
-
-# celery -A openIMIS.celery worker -E --loglevel=info

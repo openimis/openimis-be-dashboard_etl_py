@@ -104,10 +104,11 @@ class InsuredHousehold(models.Model):
                                  on_delete=models.SET_NULL, related_name="insured_households")
     gender = models.ForeignKey(Gender, db_column="Gender", null=True,
                                on_delete=models.SET_NULL, related_name="insured_households")
-    age = models.IntegerField(db_column="Age")
+    age = models.IntegerField(db_column="Age", null=True)
     confirmation_type = models.ForeignKey(ConfirmationType, db_column="ConfirmationType", null=True,
                                           on_delete=models.SET_NULL, related_name="insured_households")
-    policy_stage = models.CharField(db_column="PolicyStage", max_length=1)
+    policy_stage = models.CharField(db_column="PolicyStage", max_length=1, null=True)
+    last_id = models.IntegerField(db_column="LastId")
 
 
     class Meta:
