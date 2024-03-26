@@ -177,16 +177,18 @@ class ClaimReceived(models.Model):
 
 
 class PremiumCollected(models.Model):
-    amount = models.DecimalField(db_column="Amount", decimal_places=2, max_digits=18)
+    amount = models.DecimalField(db_column="Amount", decimal_places=2, max_digits=18, null=True)
     pay_date = models.DateField(db_column="PayDate")
-    pay_type = models.CharField(db_column="PayType", max_length=1)
+    pay_type = models.CharField(db_column="PayType", max_length=1, null=True)
     location = models.ForeignKey(Location, db_column="LocationId", null=True,
                                  on_delete=models.SET_NULL, related_name="premiums")
     payer_type = models.ForeignKey(PayerType, db_column="PayerTypeCode", max_length=1, null=True,
                                    on_delete=models.SET_NULL, related_name="premiums")
     confirmation_type = models.ForeignKey(ConfirmationType, db_column="ConfirmationType", null=True,
                                           on_delete=models.SET_NULL, related_name="premiums")
-    policy_stage = models.CharField(db_column="PolicyStage", max_length=1)
+    policy_stage = models.CharField(db_column="PolicyStage", max_length=1, null=True)
+    last_id = models.IntegerField(db_column="LastId", null=True, blank=True)
+
 
 
     class Meta:
