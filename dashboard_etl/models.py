@@ -197,16 +197,17 @@ class PremiumCollected(models.Model):
 
 class VisitsByInsuree(models.Model):
     visits = models.IntegerField(db_column="TotalVisit")
-    period = models.DateField(db_column="InsuredDate")
+    period = models.DateField(db_column="InsuredDate", null=True)
     gender = models.ForeignKey(Gender, db_column="Gender", null=True,
                                on_delete=models.SET_NULL, related_name="visits")
-    age = models.IntegerField(db_column="Age")
+    age = models.IntegerField(db_column="Age", null=True)
     location = models.ForeignKey(Location, db_column="LocationId", null=True,
                                  on_delete=models.SET_NULL, related_name="visits")
     health_facility = models.ForeignKey(HealthFacility, db_column="HFId", null=True,
                                         on_delete=models.SET_NULL, related_name="visits")
     confirmation_type = models.ForeignKey(ConfirmationType, db_column="ConfirmationType", null=True,
                                           on_delete=models.SET_NULL, related_name="visits")
+    last_id = models.IntegerField(db_column="LastId", null=True, blank=True)
 
 
     class Meta:
