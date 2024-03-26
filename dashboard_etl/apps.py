@@ -16,5 +16,6 @@ class DashboardConfig(AppConfig):
         ("claim_received"),
         ("insured_household"),
         ("insured_insuree"),
-        ("premium_collected")
+        ("premium_collected"),
+        ("visit_by_insurees")
     ]

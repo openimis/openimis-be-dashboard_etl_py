@@ -197,7 +197,7 @@ class PremiumCollected(models.Model):
 
 class VisitsByInsuree(models.Model):
     visits = models.IntegerField(db_column="TotalVisit")
-    period = models.DateField(db_column="InsuredDate", null=True)
+    period = models.DateField(db_column="Period", null=True)
     gender = models.ForeignKey(Gender, db_column="Gender", null=True,
                                on_delete=models.SET_NULL, related_name="visits")
     age = models.IntegerField(db_column="Age", null=True)
