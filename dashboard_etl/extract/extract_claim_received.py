@@ -12,7 +12,7 @@ dest_con_str = apps.get_app_config("dashboard_etl").dest_con_str
 INDICATOR = "claim_received"
 
 
-@shared_task
+@shared_task(name="etl_claims")
 def run_etl():
     try:
         instance = ClaimReceivedExtractor()

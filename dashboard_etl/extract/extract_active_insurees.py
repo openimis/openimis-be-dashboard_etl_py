@@ -12,7 +12,7 @@ dest_con_str = apps.get_app_config("dashboard_etl").dest_con_str
 INDICATOR = "active_insurees"
 
 
-@shared_task
+@shared_task(name="etl_active_insurees")
 def run_etl():
     try:
         instance = ActiveInsureesExtractor()

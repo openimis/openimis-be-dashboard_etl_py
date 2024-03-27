@@ -29,7 +29,6 @@
       }
 
       function prepareTable(data) {
-        console.log(data);
         $.each(data, function (key, value) {
           td = $(`#${key}`);
           if (td) {
@@ -46,6 +45,62 @@
   </head>
   <body>
     <div class="container">
+      <h1>ETL BASE DATA</h1>
+      <table id="base_progress" class="table table-striped table-bordered">
+        <thead>
+          <tr>
+            <th>Indicators</th>
+            <th>Progress</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Gender</td>
+            <td id="gender"></td>
+          </tr>
+          <tr>
+            <td>Confirmation Type</td>
+            <td id="confirmation_type"></td>
+          </tr>
+          <tr>
+            <td>Legal Forms</td>
+            <td id="legal_forms"></td>
+          </tr>
+          <tr>
+            <td>Payer Types</td>
+            <td id="payer_types"></td>
+          </tr>
+          <tr>
+            <td>ICD</td>
+            <td id="icd"></td>
+          </tr>
+          <tr>
+            <td>Locations</td>
+            <td id="locations"></td>
+          </tr>
+          <tr>
+            <td>Health Facilities</td>
+            <td id="health_facilities"></td>
+          </tr>
+          <tr>
+            <td colspan="2">
+              <form method="post">
+                {% csrf_token %} {{ form.as_p }}
+                <div class="d-grid gap-2">
+                  <button
+                    type="submit"
+                    name="basedata"
+                    class="btn btn-success btn-lg"
+                  >
+                    Run Base Data ETL
+                  </button>
+                </div>
+              </form>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
       <h1>ETL INDICATORS</h1>
       <table id="progress" class="table table-striped table-bordered">
         <thead>
@@ -88,8 +143,12 @@
               <form method="post">
                 {% csrf_token %} {{ form.as_p }}
                 <div class="d-grid gap-2">
-                  <button type="submit" class="btn btn-success btn-lg">
-                    Run ETL
+                  <button
+                    type="submit"
+                    name="indicators"
+                    class="btn btn-success btn-lg"
+                  >
+                    Run Indicators ETL
                   </button>
                 </div>
               </form>

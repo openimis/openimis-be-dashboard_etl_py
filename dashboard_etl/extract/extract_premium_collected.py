@@ -12,7 +12,7 @@ dest_con_str = apps.get_app_config("dashboard_etl").dest_con_str
 INDICATOR = "premium_collected"
 
 
-@shared_task
+@shared_task(name="etl_premium_collected")
 def run_etl():
     try:
         instance = PremiumCollectedExtractor()

@@ -12,10 +12,10 @@ dest_con_str = apps.get_app_config("dashboard_etl").dest_con_str
 INDICATOR = "insured_insuree"
 
 
-@shared_task
+@shared_task(name="etl_insured_insurees")
 def run_etl():
     try:
-        instance = InsuredHouseholdExtractor()
+        instance = InsuredInsureesExtractor()
         extracted_data = instance.extract()
         transformed_data = instance.transform(extracted_data)
         instance.load(transformed_data)
@@ -24,7 +24,7 @@ def run_etl():
         instance.progress_tracker.update_stage("ERROR!")
 
 
-class InsuredHouseholdExtractor(ETLBase):
+class InsuredInsureesExtractor(ETLBase):
 
     def __init__(self) -> None:
         self.progress_tracker = ETLProgress(INDICATOR)

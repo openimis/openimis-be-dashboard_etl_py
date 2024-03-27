@@ -12,7 +12,7 @@ dest_con_str = apps.get_app_config("dashboard_etl").dest_con_str
 INDICATOR = "visit_by_insurees"
 
 
-@shared_task
+@shared_task(name="etl_visits_by_insurees")
 def run_etl():
     try:
         instance = VisitByInsureeExtractor()
@@ -58,6 +58,7 @@ class VisitByInsureeExtractor(ETLBase):
                     AND F.ValidityTo IS NULL
                     AND HF.ValidityTo IS NULL
                     AND L.ValidityTo IS NULL
+                    AND C.ClaimId > {max_id}
                     GROUP BY I.Gender, ISNULL(C.DateTo, C.DateFrom), DATEDIFF(DAY, I.DOB, ISNULL(C.DateTo, C.DateFrom))/365, F.LocationId, C.HFID, F.ConfirmationType
 
 """)
