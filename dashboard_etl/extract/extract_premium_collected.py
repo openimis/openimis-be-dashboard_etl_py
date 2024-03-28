@@ -1,6 +1,8 @@
 from decimal import Decimal
+from ..models import PremiumCollected
 from dashboard_etl.extract.progress import ETLProgress
 from django.apps import apps
+from django.db.models import Max
 from sqlalchemy import create_engine
 from sqlalchemy.sql import text
 from .etl_base import ETLBase
@@ -29,7 +31,10 @@ class PremiumCollectedExtractor(ETLBase):
     def __init__(self) -> None:
         self.progress_tracker = ETLProgress(INDICATOR)
         self.engine_src = create_engine(source_con_str)
-        self.engine_dest = create_engine(dest_con_str, fast_executemany=True)
+        if dest_con_str.startswith("mssql"):
+            self.engine_dest = create_engine(dest_con_str, fast_executemany=True)
+        else:
+            self.engine_dest = create_engine(dest_con_str)
 
     def execute_sql(self, sql, engine):
         with engine.connect() as conn:
@@ -37,9 +42,9 @@ class PremiumCollectedExtractor(ETLBase):
             return result.mappings().all()
 
     def get_max_last_id(self):
-        sql = text("SELECT ISNULL(MAX(LastId), 0) LastId FROM PremiumCollected")
-        max_id = self.execute_sql(sql, self.engine_dest)
-        return max_id[0]["LastId"]
+        return PremiumCollected.objects.using("dashboard_db").aggregate(last_id=Max("last_id"))['last_id'] or 0
+
+
 
     def extract(self):
         self.progress_tracker.update_stage("Extracting...")
@@ -99,6 +104,7 @@ class PremiumCollectedExtractor(ETLBase):
                 data_to_insert = [{**row} for row in batch]
                 conn.execute(sql, data_to_insert)
                 print(f"Page {page}/{total_pages}")
+
                 self.progress_tracker.update_stage(
                     f"{(((Decimal(page)/total_pages)) * 100):.2f}% completed ({page}/{total_pages})")
 

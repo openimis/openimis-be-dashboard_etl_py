@@ -4,6 +4,8 @@ from django.apps import apps
 from django.shortcuts import render
 from dashboard_etl.extract.extractor import run_indicators_etl, run_base_data_etl
 
+from .extract.extract_premium_collected import run_etl as test_etl
+
 base_data = apps.get_app_config("dashboard_etl").base_data
 indicators = apps.get_app_config("dashboard_etl").indicators
 
@@ -41,7 +43,8 @@ def extract_base_data(request):
 
 def extract_indicators(request):
     if request.method == "POST":
-        result = run_indicators_etl.apply_async()
+        result = test_etl()
+        # result = run_indicators_etl.apply_async()
         progress = {indicator_name: cache.get(f"{indicator_name}_progress", "Not Started")
                     for indicator_name in indicators}
 
