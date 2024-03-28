@@ -90,7 +90,7 @@ class PremiumCollectedExtractor(ETLBase):
     def load(self, data):
         self.progress_tracker.update_stage("Loading...")
         sql = text("""
-                    INSERT INTO PremiumCollected (Amount, PayDate, PayType, LocationId, PayerTypeCode, ConfirmationType, PolicyStage,  LastId)
+                    INSERT INTO premiums (amount, pay_date, pay_type, location_id, payer_type, confirmation_type, policy_stage,  last_id)
                     VALUES(:amount, :pay_date, :pay_type, :location_id, :payer_type_code, :confirmation_type, :policy_stage, :last_id)
 """)
 
